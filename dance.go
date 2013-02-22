@@ -107,25 +107,19 @@ func (dl *DancingLinks) InsertRow(row []bool, key int) {
 }
 
 func (dl *DancingLinks) Cover(column *Node) {
-	// fmt.Printf("Covering %d\n", column.key)
     column.right.left = column.left
     column.left.right = column.right
 
     for i := column.down; i != column; i = i.down {
-		// fmt.Println(i, column)
-		// fmt.Println(i.right, i.right.right)
 		for j := i.right; j != i; j = j.right {
-			// fmt.Println(j)
             j.down.up = j.up
             j.up.down = j.down
             j.column.size -= 1
 		}
 	}
-	// fmt.Printf("Cover %d done\n", column.key)
 }
 
 func (dl *DancingLinks) Uncover(column *Node) {
-	// fmt.Printf("Uncovering %d\n", column.key)
 	for i := column.up; i != column; i = i.up {
 		for j := i.left; j != i; j = j.left {
             j.column.size += 1
