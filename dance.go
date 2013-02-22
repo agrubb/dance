@@ -17,12 +17,12 @@ type Node struct {
 }
 
 type DancingLinks struct {
-	head    *Node
-	columns []*Node
+	head                        *Node
+	columns                     []*Node
 	use_greedy_column_selection bool
-	solution []int
-	all_solutions [][]int
-	nodes_searched int
+	solution                    []int
+	all_solutions               [][]int
+	nodes_searched              int
 }
 
 func SingletonNode() *Node {
@@ -107,14 +107,14 @@ func (dl *DancingLinks) InsertRow(row []bool, key int) {
 }
 
 func (dl *DancingLinks) Cover(column *Node) {
-    column.right.left = column.left
-    column.left.right = column.right
+	column.right.left = column.left
+	column.left.right = column.right
 
-    for i := column.down; i != column; i = i.down {
+	for i := column.down; i != column; i = i.down {
 		for j := i.right; j != i; j = j.right {
-            j.down.up = j.up
-            j.up.down = j.down
-            j.column.size -= 1
+			j.down.up = j.up
+			j.up.down = j.down
+			j.column.size -= 1
 		}
 	}
 }
@@ -122,56 +122,56 @@ func (dl *DancingLinks) Cover(column *Node) {
 func (dl *DancingLinks) Uncover(column *Node) {
 	for i := column.up; i != column; i = i.up {
 		for j := i.left; j != i; j = j.left {
-            j.column.size += 1
-            j.down.up = j
-            j.up.down = j
+			j.column.size += 1
+			j.down.up = j
+			j.up.down = j
 		}
 	}
 
-    column.right.left = column
-    column.left.right = column
+	column.right.left = column
+	column.left.right = column
 }
 
 func (dl *DancingLinks) SelectColumn() *Node {
-    if !dl.use_greedy_column_selection {
-        return dl.head.right
+	if !dl.use_greedy_column_selection {
+		return dl.head.right
 	}
 
-    best_size := math.MaxInt32
-    best_c := (*Node)(nil)
+	best_size := math.MaxInt32
+	best_c := (*Node)(nil)
 
-	for  c := dl.head.right; c != dl.head; c = c.right {
-        if c.size < best_size {
-            best_size = c.size
-            best_c = c
+	for c := dl.head.right; c != dl.head; c = c.right {
+		if c.size < best_size {
+			best_size = c.size
+			best_c = c
 		}
 	}
 
-    return best_c
+	return best_c
 }
 
 func (dl *DancingLinks) Search() {
-    if dl.head.right == dl.head {
-        dl.all_solutions = append(dl.all_solutions, append([]int{}, dl.solution...))
-        return
+	if dl.head.right == dl.head {
+		dl.all_solutions = append(dl.all_solutions, append([]int{}, dl.solution...))
+		return
 	}
 
-    c := dl.SelectColumn()
+	c := dl.SelectColumn()
 	dl.nodes_searched += 1
 
-    dl.Cover(c)
+	dl.Cover(c)
 	for r := c.down; r != c; r = r.down {
-        dl.solution = append(dl.solution, r.key)
+		dl.solution = append(dl.solution, r.key)
 		for j := r.right; j != r; j = j.right {
-            dl.Cover(j.column)
+			dl.Cover(j.column)
 		}
-        dl.Search()
+		dl.Search()
 		for j := r.left; j != r; j = j.left {
 			dl.Uncover(j.column)
 		}
-        dl.solution = dl.solution[:len(dl.solution)-1]
+		dl.solution = dl.solution[:len(dl.solution)-1]
 	}
-    dl.Uncover(c)
+	dl.Uncover(c)
 }
 
 func (dl *DancingLinks) AllSolutions() [][]int {
@@ -183,7 +183,7 @@ func (dl *DancingLinks) AllSolutions() [][]int {
 	dl.Search()
 	elapsed := time.Since(start).Seconds()
 
-    fmt.Printf("Nodes searched: %d\n", dl.nodes_searched)
+	fmt.Printf("Nodes searched: %d\n", dl.nodes_searched)
 	fmt.Printf("Solutions found: %d\n", len(dl.all_solutions))
 	fmt.Printf("Time elapsed: %f\n", elapsed)
 	return dl.all_solutions
@@ -214,7 +214,9 @@ func SaveSolution(filename string, solution [][]int) {
 	lines := make([]string, 0, len(solution))
 	for _, s := range solution {
 		strs := make([]string, 0, len(s))
-		for _, v := range s { strs = append(strs, strconv.Itoa(v)) }
+		for _, v := range s {
+			strs = append(strs, strconv.Itoa(v))
+		}
 
 		lines = append(lines, strings.Join(strs, " "))
 	}
